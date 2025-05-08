@@ -16,34 +16,11 @@ public partial class S09LaboContext : DbContext
     {
     }
 
-    public virtual DbSet<Chanson> Chansons { get; set; }
-
-    public virtual DbSet<Chanteur> Chanteurs { get; set; }
-
-    public virtual DbSet<VwChanteurNbChanson> VwChanteurNbChansons { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=S09_Labo");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Chanson>(entity =>
-        {
-            entity.HasKey(e => e.ChansonId).HasName("PK_Chanson_ChansonID");
-
-            entity.HasOne(d => d.Chanteur).WithMany(p => p.Chansons).HasConstraintName("FK_Chanson_ChanteurID");
-        });
-
-        modelBuilder.Entity<Chanteur>(entity =>
-        {
-            entity.HasKey(e => e.ChanteurId).HasName("PK_Chanteur_ChanteurID");
-        });
-
-        modelBuilder.Entity<VwChanteurNbChanson>(entity =>
-        {
-            entity.ToView("VW_ChanteurNbChansons", "Musique");
-        });
-
         OnModelCreatingPartial(modelBuilder);
     }
 
