@@ -3,7 +3,14 @@
     GO
 -- Nouvelle vue
 	
-	--CREATE VIEW Musique.VW_ChanteurNbChansons AS
+	CREATE VIEW Musique.VW_ChanteurNbChansons 
+	AS
+		SELECT Chant.ChanteurID, Chant.Nom, Chant.DateNaissance as [Date de naissance], COUNT (Chans.ChanteurID) as [Nombre de chansons]
+		FROM Musique.Chanteur Chant
+		LEFT JOIN Musique.Chanson Chans
+		ON Chant.ChanteurID = Chans.ChanteurID
+		GROUP BY Chant.ChanteurID, Chant.Nom, Chant.DateNaissance
+	GO
 	
 	---- ?
 	

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using S09_Labo.Data;
 using S09_Labo.Models;
@@ -44,12 +45,7 @@ namespace S09_Labo.Controllers
             List<Chanson> chansons = await _context.Chansons.ToListAsync();
 
             // Ensuite on va chercher les chanteurs ET on compte leur nombre de chansons pour chacun
-            List<ChanteurEtNbChansonsViewModel> cencvm = await _context.Chanteurs
-                .Select(x => new ChanteurEtNbChansonsViewModel()
-                {
-                    Chanteur = x,
-                    NbChansons = x.Chansons.Count
-                }).ToListAsync();
+            List<VwChanteurNbChanson> cencvm = await _context.VwChanteurNbChansons.ToListAsync();
             return View(cencvm);
         }
 
@@ -62,9 +58,9 @@ namespace S09_Labo.Controllers
                 ViewData["chanteurNonTrouve"] = "Cet artiste n'existe pas.";
                 return RedirectToAction("Index", "Musique");
             }
+            List<Chanson> chansons = await _context.Chansons.FromSqlRaw("EXEC Musique.USP_ChanteurChansons @ChanteurID", new SqlParameter("@ChanteurID", chanteur.ChanteurId)).ToListAsync();
             // Obtenir la liste des chansons du chanteur (Sera modifié à la migration 1.3)
             // La fouille est basée sur le titre de la chanson au lieu de son id...
-            List<Chanson> chansons = await _context.Chansons.Where(x => x.NomChanteur == chanteur.Nom).ToListAsync();
 
             return View(new ChanteurEtSesChansonsViewModel()
             {
